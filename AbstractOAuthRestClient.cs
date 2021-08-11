@@ -20,6 +20,14 @@ namespace NorthernCrown.HttpRestClient
             return client;
         }
 
-        protected abstract Task Authenticate();
+        protected abstract Task<bool> Authenticate();
+        public async Task<string> Reauthorize()
+        {
+            BearerToken = string.Empty;
+            await Authenticate();
+            return this.BearerToken;
+        }
+
+        
     }
 }
