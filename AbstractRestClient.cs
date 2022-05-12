@@ -32,9 +32,11 @@ namespace NorthernCrown.HttpRestClient
                     Method = method,
                     RequestUri = GetUri(url),
                     Content = GetHttpContent(content, contentType)
-                };
+                };                   
                 var response = await SendRequest(request);
-                return await response.Content.ReadAsStringAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                //Console.WriteLine(responseContent);
+                return responseContent;
             }
             catch (System.Net.Http.HttpRequestException x)
             {
@@ -66,6 +68,9 @@ namespace NorthernCrown.HttpRestClient
                     Console.WriteLine(response.StatusCode);
                     Console.WriteLine(response.ReasonPhrase);
 
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        return string.Empty;
+
                     if (trycount >= 5)
                         throw new Exception("Okay, something's broken. I quit.");
 
@@ -77,7 +82,7 @@ namespace NorthernCrown.HttpRestClient
                 else
                 {
                     var content = await response.Content.ReadAsStringAsync();
-
+                    //Console.WriteLine(content);
                     return content;
                 }
             }
@@ -112,7 +117,9 @@ namespace NorthernCrown.HttpRestClient
         {
             if (contentType == "application/json")
             {
-                return new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, contentType);
+                var json = JsonConvert.SerializeObject(body);    
+                //Console.WriteLine(json);
+                return new StringContent(json, Encoding.UTF8, contentType);
             }
             else if (contentType == "application/x-www-form-urlencoded")
             {
@@ -127,7 +134,7 @@ namespace NorthernCrown.HttpRestClient
         }
 
         protected abstract HttpClient GetHttpClient();
-        protected Uri GetUri(string path)
+        virtual protected Uri GetUri(string path)
         {
             return new Uri(RootUrl, path);
         }
