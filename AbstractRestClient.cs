@@ -34,6 +34,7 @@ namespace NorthernCrown.HttpRestClient
                     Content = GetHttpContent(content, contentType)
                 };                   
                 var response = await SendRequest(request);
+                Console.WriteLine(response.StatusCode.ToString());
                 var responseContent = await response.Content.ReadAsStringAsync();
                 //Console.WriteLine(responseContent);
                 return responseContent;
